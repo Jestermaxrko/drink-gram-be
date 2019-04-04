@@ -1,15 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const routes = require('./routes/index');
 const mongoose = require('mongoose');
 const cors = require('cors')
+
+const routes = require('./routes/index');
+const userRoutes = require('./routes/users');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
+
+
 app.use('/', routes);
+app.use('/users', userRoutes);
 
 app.set('port', process.env.PORT || 3000);
 
@@ -23,27 +28,11 @@ app.use((req, res, next) => {
 
 /// error handlers
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use((err, req, res, next) => {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-// production error handler
-// no stacktraces leaked to user
 app.use((err, req, res, next) => {
     res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+    res.json(err)
 });
+
 
 mongoose.connect('mongodb://drink-gram:drink100gram@ds129536.mlab.com:29536/drink-gram', { useNewUrlParser: true });
 
